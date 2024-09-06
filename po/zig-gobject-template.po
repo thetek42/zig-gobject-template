@@ -1,0 +1,39 @@
+#: src/ui/window.blp:5
+msgid "zig-gobject-template"
+msgstr ""
+
+#: src/ui/window.blp:16
+msgid "Menu"
+msgstr ""
+
+#: src/ui/window.blp:28 src/ui/window.blp:40
+msgid "About"
+msgstr ""
+
+#: src/main.zig:11 src/ui/window.blp:21 src/main.zig:12
+msgid "Hello, World!"
+msgstr ""
+
+#: src/ui/prefs.blp:14
+msgid "System"
+msgstr ""
+
+#: src/ui/prefs.blp:14
+msgid "Dark"
+msgstr ""
+
+#: src/ui/prefs.blp:14
+msgid "Light"
+msgstr ""
+
+#: src/ui/window.blp:39
+msgid "Preferences"
+msgstr ""
+
+#: src/ui/prefs.blp:11
+msgid "Color Scheme"
+msgstr ""
+
+#: src/ui/prefs.blp:7
+msgid "Interface"
+msgstr ""

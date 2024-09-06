@@ -1,0 +1,42 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Window : Adw.ApplicationWindow {
+  title: _("zig-gobject-template");
+  default-width: 1280;
+  default-height: 720;
+
+  content: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [end]
+      MenuButton {
+        icon-name: "open-menu-symbolic";
+        menu-model: primary_menu;
+        tooltip-text: _("Menu");
+      }
+    }
+
+    content: Gtk.Box {
+      orientation: vertical;
+      halign: center;
+      valign: center;
+      spacing: 16;
+
+      Gtk.Label label {
+        label: "Hello, World!";
+      }
+
+      Gtk.Button button {
+        label: "Click me!";
+      }
+    };
+  };
+}
+
+menu primary_menu {
+  section {
+    item (_("Preferences"), "app.preferences")
+    item (_("About"), "app.about")
+  }
+}

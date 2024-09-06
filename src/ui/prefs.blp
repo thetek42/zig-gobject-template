@@ -1,0 +1,19 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PreferencesDialog : Adw.PreferencesDialog {
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      title: _("Interface");
+
+      Adw.ComboRow color_scheme {
+        icon-name: "night-light-symbolic";
+        title: _("Color Scheme");
+
+        model: Gtk.StringList {
+          strings [ _("System"), _("Dark"), _("Light") ]
+        };
+      }
+    }
+  }
+}

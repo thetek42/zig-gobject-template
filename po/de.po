@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2024-06-22 21:10+0200\n"
+"Last-Translator:  <tk@thetek.de>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/ui/window.blp:5
+msgid "zig-gobject-template"
+msgstr "zig-gobject-template"
+
+#: src/ui/window.blp:16
+msgid "Menu"
+msgstr "Menü"
+
+#: src/ui/window.blp:28 src/ui/window.blp:40
+msgid "About"
+msgstr "Info"
+
+#: src/main.zig:11 src/ui/window.blp:21 src/main.zig:12
+msgid "Hello, World!"
+msgstr "Hallo, Welt!"
+
+#: src/ui/prefs.blp:14
+msgid "System"
+msgstr "System"
+
+#: src/ui/prefs.blp:14
+msgid "Dark"
+msgstr "Dunkel"
+
+#: src/ui/prefs.blp:14
+msgid "Light"
+msgstr "Hell"
+
+#: src/ui/window.blp:39
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: src/ui/prefs.blp:11
+msgid "Color Scheme"
+msgstr "Farbschema"
+
+#: src/ui/prefs.blp:7
+msgid "Interface"
+msgstr "Benutzeroberfläche"

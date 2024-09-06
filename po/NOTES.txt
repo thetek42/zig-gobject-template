@@ -1,0 +1,11 @@
+generate initial po file:
+  xgettext --output=po/zig-gobject-template.po --language=c --keyword=_ --omit-header $(find src -type f)
+  
+generate language file:
+  msginit -i po/zig-gobject-template.po -o po/de.po -l de_DE.utf8
+
+update initial po file:
+  xgettext --output=po/zig-gobject-template.po --language=c --keyword=_ --omit-header --join-existing $(find src -type f)
+
+update language file:
+  msgmerge -U po/de.po po/zig-gobject-template.po

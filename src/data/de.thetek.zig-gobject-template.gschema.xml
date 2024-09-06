@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/de/thetek/zig-gobject-template/" id="de.thetek.zig-gobject-template">
+    <key name="color-scheme" type="u">
+      <range min="0" max="2"/>
+      <default>0</default>
+      <summary>Color Scheme</summary>
+      <description>The color scheme to use for the user interface</description>
+    </key>
+  </schema>
+</schemalist>
