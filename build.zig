@@ -16,6 +16,7 @@ pub fn build(b: *std.Build) !void {
     try gresource_xml.appendSlice("<?xml version=\"1.0\" encoding=\"UTF-8\"?><gresources><gresource prefix=\"" ++ config.data_namespace ++ "\">");
 
     var blueprint_dir = try std.fs.cwd().openDir(blueprint_dir_path, .{ .iterate = true });
+    defer blueprint_dir.close();
     var blueprint_walker = try blueprint_dir.walk(b.allocator);
     defer blueprint_walker.deinit();
     while (try blueprint_walker.next()) |ui| {
@@ -117,6 +118,9 @@ pub fn build(b: *std.Build) !void {
 
         const winpthreads = b.dependency("winpthreads", .{});
         exe.linkLibrary(winpthreads.artifact("winpthreads"));
+
+        // hide terminal when starting
+        exe.subsystem = .Windows;
     } else {
         exe.linkSystemLibrary("libadwaita-1");
     }
