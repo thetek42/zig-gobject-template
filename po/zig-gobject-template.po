@@ -6,7 +6,7 @@ msgstr ""
 msgid "Menu"
 msgstr ""
 
-#: src/ui/window.blp:28 src/ui/window.blp:40
+#: src/ui/window.blp:28 src/ui/window.blp:40 src/ui/window.blp:41
 msgid "About"
 msgstr ""
 
@@ -14,15 +14,15 @@ msgstr ""
 msgid "Hello, World!"
 msgstr ""
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:15
 msgid "System"
 msgstr ""
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:16
 msgid "Dark"
 msgstr ""
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:17
 msgid "Light"
 msgstr ""
 
@@ -36,4 +36,16 @@ msgstr ""
 
 #: src/ui/prefs.blp:7
 msgid "Interface"
+msgstr ""
+
+#: src/ui/window.blp:40
+msgid "Shortcuts"
+msgstr ""
+
+#: src/ui/shortcuts.blp:11
+msgid "General"
+msgstr ""
+
+#: src/ui/shortcuts.blp:15
+msgid "Quit"
 msgstr ""

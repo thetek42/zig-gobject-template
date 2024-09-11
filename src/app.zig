@@ -52,6 +52,7 @@ pub const Application = extern struct {
     pub fn new() *Self {
         return gobject.ext.newInstance(Self, .{
             .@"application-id" = config.app_id,
+            .@"resource-base-path" = config.data_namespace,
             .flags = gio.ApplicationFlags{},
         });
     }
@@ -62,15 +63,13 @@ pub const Application = extern struct {
     }
 
     pub fn startup(self: *Self) callconv(.C) void {
-        const action_about = gio.SimpleAction.new("about", null);
-        defer action_about.unref();
-        _ = gio.SimpleAction.signals.activate.connect(action_about, *Self, &showAbout, self, .{});
-        self.as(gio.ActionMap).addAction(action_about.as(gio.Action));
+        // TODO: maybe use add_action_entries instead?
+        self.addSimpleAction("quit", &quitAction);
+        self.addSimpleAction("about", &showAbout);
+        self.addSimpleAction("shortcuts", &showShortcuts);
+        self.addSimpleAction("preferences", &showPrefs);
 
-        const action_prefs = gio.SimpleAction.new("preferences", null);
-        defer action_prefs.unref();
-        _ = gio.SimpleAction.signals.activate.connect(action_prefs, *Self, &showPrefs, self, .{});
-        self.as(gio.ActionMap).addAction(action_prefs.as(gio.Action));
+        self.setAccel("app.quit", "<primary>Q");
 
         self.virtualCall(gio.Application, "startup", .{});
     }
@@ -85,18 +84,39 @@ pub const Application = extern struct {
         dialog.setApplicationName(config.app_name);
         dialog.setVersion(config.app_version);
 
-        const window = self.as(gtk.Application).getActiveWindow().?;
+        const window: *gtk.Window = self.as(gtk.Application).getActiveWindow().?;
         dialog.as(adw.Dialog).present(window.as(gtk.Widget));
     }
 
     fn showPrefs(_: *gio.SimpleAction, _: ?*glib.Variant, self: *Self) callconv(.C) void {
+        const window: *gtk.Window = self.as(gtk.Application).getActiveWindow().?;
         const prefs = PreferencesDialog.new(self.private.settings);
-        const window = self.as(gtk.Application).getActiveWindow().?;
         prefs.as(adw.Dialog).present(window.as(gtk.Widget));
+    }
+
+    fn showShortcuts(_: *gio.SimpleAction, _: ?*glib.Variant, self: *Self) callconv(.C) void {
+        const window: *gtk.Window = self.as(gtk.Application).getActiveWindow().?;
+        const overlay = util.getObjectFromBuilder(gtk.Window, "shortcuts.ui", "shortcuts_window");
+        window.setTransientFor(overlay);
+        overlay.present();
+    }
+
+    fn quitAction(_: *gio.SimpleAction, _: ?*glib.Variant, self: *Self) callconv(.C) void {
+        const app = self.as(gio.Application);
+        app.quit();
     }
 
     fn getColorScheme(self: *Self) c_uint {
         return self.private.color_scheme;
+    }
+
+    fn setAccel(self: *Self, comptime action: [*:0]const u8, comptime accel: [*:0]const u8) void {
+        // due to a compilation bug in zig-gobject, setAccelsForAction does not
+        // account for the null-termination of the accels array, so this serves
+        // as a temporary workaround.
+        const app = self.as(gtk.Application);
+        const accels = [_]?[*:0]const u8{ accel, null };
+        app.setAccelsForAction(action, @ptrCast(&accels));
     }
 
     fn setColorScheme(self: *Self, color_scheme: c_uint) void {

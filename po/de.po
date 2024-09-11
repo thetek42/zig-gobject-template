@@ -18,7 +18,7 @@ msgstr "zig-gobject-template"
 msgid "Menu"
 msgstr "Menü"
 
-#: src/ui/window.blp:28 src/ui/window.blp:40
+#: src/ui/window.blp:28 src/ui/window.blp:40 src/ui/window.blp:41
 msgid "About"
 msgstr "Info"
 
@@ -26,15 +26,15 @@ msgstr "Info"
 msgid "Hello, World!"
 msgstr "Hallo, Welt!"
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:15
 msgid "System"
 msgstr "System"
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:16
 msgid "Dark"
 msgstr "Dunkel"
 
-#: src/ui/prefs.blp:14
+#: src/ui/prefs.blp:14 src/ui/prefs.blp:17
 msgid "Light"
 msgstr "Hell"
 
@@ -49,3 +49,15 @@ msgstr "Farbschema"
 #: src/ui/prefs.blp:7
 msgid "Interface"
 msgstr "Benutzeroberfläche"
+
+#: src/ui/window.blp:40
+msgid "Shortcuts"
+msgstr "Tastenkürzel"
+
+#: src/ui/shortcuts.blp:11
+msgid "General"
+msgstr "Allgemein"
+
+#: src/ui/shortcuts.blp:15
+msgid "Quit"
+msgstr "Beenden"
