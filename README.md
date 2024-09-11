@@ -21,3 +21,15 @@ This is a sample application illustrating how to use [zig-gobject](https://githu
    zig build
    zig build run
    ```
+
+### Building for Windows
+
+Since building natively on Windows does not work paricularly well, you need to
+cross-compile the application from Linux:
+
+```sh
+# fetch required libraries dependencies (only required the first time)
+sh fetch-windows-libs.sh
+# cross-compile to windows
+zig build -Dtarget=x86_64-windows
+```
