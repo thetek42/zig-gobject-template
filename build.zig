@@ -4,10 +4,10 @@ const config = @import("config.zig");
 pub fn build(b: *std.Build) !void {
     // --- compile blueprint files ---
 
-    const blueprint_dir = "src/ui";
+    const blueprint_dir_path = "src/ui";
     const compile_blueprints = b.addSystemCommand(&.{ "blueprint-compiler", "batch-compile" });
     const data_output = compile_blueprints.addOutputDirectoryArg("data");
-    compile_blueprints.addDirectoryArg(b.path(blueprint_dir));
+    compile_blueprints.addDirectoryArg(b.path(blueprint_dir_path));
 
     // --- generate gresource.xml ---
 
@@ -15,12 +15,12 @@ pub fn build(b: *std.Build) !void {
     defer gresource_xml.deinit();
     try gresource_xml.appendSlice("<?xml version=\"1.0\" encoding=\"UTF-8\"?><gresources><gresource prefix=\"" ++ config.data_namespace ++ "\">");
 
-    var dir = try std.fs.cwd().openDir(blueprint_dir, .{ .iterate = true });
-    var walker = try dir.walk(b.allocator);
-    defer walker.deinit();
-    while (try walker.next()) |ui| {
+    var blueprint_dir = try std.fs.cwd().openDir(blueprint_dir_path, .{ .iterate = true });
+    var blueprint_walker = try blueprint_dir.walk(b.allocator);
+    defer blueprint_walker.deinit();
+    while (try blueprint_walker.next()) |ui| {
         if (!std.mem.eql(u8, ".blp", std.fs.path.extension(ui.path))) continue;
-        compile_blueprints.addFileArg(b.path(b.pathJoin(&.{ blueprint_dir, ui.path })));
+        compile_blueprints.addFileArg(b.path(b.pathJoin(&.{ blueprint_dir_path, ui.path })));
         try gresource_xml.appendSlice("<file preprocess=\"xml-stripblanks\">");
         try gresource_xml.appendSlice(ui.path[0..(ui.path.len - 4)]);
         try gresource_xml.appendSlice(".ui</file>");
@@ -92,12 +92,51 @@ pub fn build(b: *std.Build) !void {
     exe.root_module.addImport("glib", gobject_codegen.module("glib2"));
     exe.root_module.addImport("gobject", gobject_codegen.module("gobject2"));
     exe.root_module.addImport("gtk", gobject_codegen.module("gtk4"));
-    exe.linkSystemLibrary("libadwaita-1");
+
+    const libintl = b.dependency("libintl", .{});
+    exe.root_module.addImport("libintl", libintl.module("libintl"));
 
     const config_module = b.addModule("config", .{ .root_source_file = b.path("config.zig") });
     exe.root_module.addImport("config", config_module);
 
-    b.installArtifact(exe);
+    // on windows, we need to explicitly link with gtk from gvsbuild, vulkan and pthreads.
+    // on linux, simply linking with the system libraries works fine.
+    if (target.result.os.tag == .windows) {
+        std.fs.cwd().access("windows/", .{}) catch @panic("please run fetch-windows-libs.sh first");
+
+        exe.addLibraryPath(b.path("windows/gtk/lib/"));
+        exe.addIncludePath(b.path("windows/gtk/include/"));
+        exe.addIncludePath(b.path("windows/gtk/include/cairo/"));
+        exe.addIncludePath(b.path("windows/gtk/include/glib-2.0/"));
+        exe.addIncludePath(b.path("windows/gtk/lib/glib-2.0/include/"));
+        exe.addIncludePath(b.path("windows/gtk/include/gobject-introspection-1.0/"));
+
+        exe.addLibraryPath(b.path("windows/vulkan/lib/"));
+
+        const winpthreads = b.dependency("winpthreads", .{});
+        exe.linkLibrary(winpthreads.artifact("winpthreads"));
+    } else {
+        exe.linkSystemLibrary("libadwaita-1");
+    }
+
+    const install_exe = b.addInstallArtifact(exe, .{});
+    b.getInstallStep().dependOn(&install_exe.step);
+
+    // on windows, we also need to install the gtk dlls in the bin directory
+    if (target.result.os.tag == .windows) {
+        const path = "windows/gtk/bin";
+        var dir = try std.fs.cwd().openDir(path, .{ .iterate = true });
+        defer dir.close();
+        var walker = try dir.walk(b.allocator);
+        defer walker.deinit();
+
+        while (try walker.next()) |bin| {
+            if (std.mem.endsWith(u8, bin.basename, ".dll")) {
+                const install_dll = b.addInstallBinFile(b.path(b.pathJoin(&.{ path, bin.path })), bin.basename);
+                install_exe.step.dependOn(&install_dll.step);
+            }
+        }
+    }
 
     // --- step for running the application ---
 

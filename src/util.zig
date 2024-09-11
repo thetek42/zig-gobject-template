@@ -3,10 +3,10 @@ const builtin = @import("builtin");
 const config = @import("config");
 const gobject = @import("gobject");
 const gtk = @import("gtk");
+const libintl = @import("libintl");
 
 const libc = @cImport({
     @cInclude("locale.h");
-    @cInclude("libintl.h");
 });
 
 pub fn setupLocale() !void {
@@ -20,8 +20,11 @@ pub fn setupLocale() !void {
     const locale_dir = getRelativeExeDir("share/locale", &buf);
 
     _ = libc.setlocale(libc.LC_ALL, null);
-    _ = libc.bindtextdomain(config.app_name, locale_dir.ptr);
-    _ = libc.textdomain(config.app_name);
+    if (builtin.os.tag != .windows) {
+        // TODO: figure out why this doesn't work on windoof
+        _ = libintl.bindTextDomain(config.app_name, locale_dir);
+        _ = libintl.setTextDomain(config.app_name);
+    }
 }
 
 pub fn getRelativeExeDir(path: [:0]const u8, buf: []u8) [:0]const u8 {
