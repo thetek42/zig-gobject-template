@@ -99,7 +99,7 @@ pub fn build(b: *std.Build) !void {
     const config_module = b.addModule("config", .{ .root_source_file = b.path("config.zig") });
     exe.root_module.addImport("config", config_module);
 
-    // on windows, we need to explicitly link with gtk from gvsbuild, vulkan and pthreads.
+    // on windows, we need to explicitly link with gtk from gvsbuild, libintl, vulkan and pthreads.
     // on linux, simply linking with the system libraries works fine.
     if (target.result.os.tag == .windows) {
         std.fs.cwd().access("windows/", .{}) catch @panic("please run fetch-windows-libs.sh first");
@@ -112,6 +112,8 @@ pub fn build(b: *std.Build) !void {
         exe.addIncludePath(b.path("windows/gtk/include/gobject-introspection-1.0/"));
 
         exe.addLibraryPath(b.path("windows/vulkan/lib/"));
+
+        exe.linkSystemLibrary("intl");
 
         const winpthreads = b.dependency("winpthreads", .{});
         exe.linkLibrary(winpthreads.artifact("winpthreads"));

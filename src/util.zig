@@ -20,11 +20,8 @@ pub fn setupLocale() !void {
     const locale_dir = getRelativeExeDir("share/locale", &buf);
 
     _ = libc.setlocale(libc.LC_ALL, null);
-    if (builtin.os.tag != .windows) {
-        // TODO: figure out why this doesn't work on windoof
-        _ = libintl.bindTextDomain(config.app_name, locale_dir);
-        _ = libintl.setTextDomain(config.app_name);
-    }
+    _ = libintl.bindTextDomain(config.app_name, locale_dir);
+    _ = libintl.setTextDomain(config.app_name);
 }
 
 pub fn getRelativeExeDir(path: [:0]const u8, buf: []u8) [:0]const u8 {
