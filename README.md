@@ -5,9 +5,22 @@ This is a sample application illustrating how to use [zig-gobject](https://githu
 ## Features
 
 - Gtk4 + LibAdwaita
-- [Blueprints](https://gitlab.gnome.org/jwestman/blueprint-compiler)
+- [Blueprints](https://gitlab.gnome.org/GNOME/blueprint-compiler)
 - libintl (Translation)
 - GSchema (Preferences)
+
+## Dependencies
+
+- Linux
+  - It is not possible to compile this on Windows (see [here](https://github.com/ianprime0509/zig-gobject/issues/50))
+  - To obtain a binary that works on Windows, you have to cross-compile as described [below](#building-for-windows) (e.g. from WSL)
+- Zig 0.14 (or higher)
+- GNOME / GTK development libraries
+  - If you are targeting Linux, two options are available:
+    - Install the GNOME SDK as described [here](https://github.com/ianprime0509/zig-gobject?tab=readme-ov-file#development-environment). You might possibly also need to install Libintl separately, I'm not sure about that.
+    - Install GTK, Libadwaita and Libintl with your system's package manager. GTK 4.16 and 4.18 are tested and work fine, older and newer versions should hopefully work as well.
+  - If you are targeting Windows, run `sh fetch-windows-libs.sh` as described [below](#building-for-windows).
+- [Blueprint Compiler](https://gitlab.gnome.org/GNOME/blueprint-compiler)
 
 ## Usage
 
