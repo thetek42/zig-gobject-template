@@ -29,7 +29,6 @@ pub const Application = extern struct {
             pub const name = "color-scheme";
             pub const impl = gobject.ext.defineProperty(name, Self, c_uint, .{
                 .accessor = .{ .setter = &setColorScheme, .getter = &getColorScheme },
-                .flags = .{ .readable = true, .writable = true },
                 .minimum = 0,
                 .maximum = 2,
                 .default = 0,
@@ -77,6 +76,14 @@ pub const Application = extern struct {
     pub fn dispose(self: *Self) callconv(.C) void {
         self.private.settings.unref();
         self.virtualCall(gobject.Object, "dispose", .{});
+    }
+
+    pub fn addSimpleAction(self: *Self, comptime name: [*:0]const u8, callback: *const fn (*gio.SimpleAction, ?*glib.Variant, *Self) callconv(.C) void) void {
+        const action = gio.SimpleAction.new(name, null);
+        defer action.unref();
+        _ = gio.SimpleAction.signals.activate.connect(action, *Self, callback, self, .{});
+        const action_map = gobject.ext.as(gio.ActionMap, self);
+        action_map.addAction(action.as(gio.Action));
     }
 
     fn showAbout(_: *gio.SimpleAction, _: ?*glib.Variant, self: *Self) callconv(.C) void {

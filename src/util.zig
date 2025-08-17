@@ -18,7 +18,7 @@ pub fn setupLocale() !void {
     // allow for portable installations. Instead, we determine the location
     // relative to the application's binary location. When the application is in
     // /prefix/bin, the translation files are located in /prefix/share/locale.
-    var buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+    var buf: [std.fs.max_path_bytes]u8 = undefined;
     const locale_dir = getRelativeExeDir("share/locale", &buf);
 
     _ = libc.setlocale(libc.LC_ALL, null);
@@ -58,19 +58,6 @@ pub fn getObjectFromBuilder(comptime T: type, comptime resource: []const u8, obj
 }
 
 pub fn Common(comptime Self: type) type {
-    const AddAction = switch (gobject.ext.isAssignableFrom(gio.ActionMap, Self)) {
-        true => struct {
-            pub fn addSimpleAction(self: *Self, comptime name: [*:0]const u8, callback: *const fn (*gio.SimpleAction, ?*glib.Variant, *Self) callconv(.C) void) void {
-                const action = gio.SimpleAction.new(name, null);
-                defer action.unref();
-                _ = gio.SimpleAction.signals.activate.connect(action, *Self, callback, self, .{});
-                const action_map = gobject.ext.as(gio.ActionMap, self);
-                action_map.addAction(action.as(gio.Action));
-            }
-        },
-        false => struct {},
-    };
-
     return struct {
         pub fn as(self: *Self, comptime T: type) *T {
             return gobject.ext.as(T, self);
@@ -81,8 +68,6 @@ pub fn Common(comptime Self: type) type {
             const parent_class = Self.Class.meta.parent_class.as(T.Class);
             @call(.auto, virtual_func.call, .{ parent_class, self.as(T) } ++ args);
         }
-
-        pub usingnamespace AddAction;
     };
 }
 

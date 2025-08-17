@@ -76,29 +76,38 @@ pub fn build(b: *std.Build) !void {
 
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const exe = b.addExecutable(.{
-        .name = config.app_name,
-        .root_source_file = b.path("src/main.zig"),
+
+    const libintl = b.dependency("libintl", .{ .target = target, .optimize = optimize });
+    const gobject = b.dependency("gobject", .{ .target = target, .optimize = optimize });
+
+    const config_module = b.createModule(.{
         .target = target,
         .optimize = optimize,
+        .root_source_file = b.path("config.zig"),
     });
 
+    const module = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+        .root_source_file = b.path("src/main.zig"),
+        .imports = &.{
+            .{ .name = "adw", .module = gobject.module("adw1") },
+            .{ .name = "gio", .module = gobject.module("gio2") },
+            .{ .name = "glib", .module = gobject.module("glib2") },
+            .{ .name = "gobject", .module = gobject.module("gobject2") },
+            .{ .name = "gtk", .module = gobject.module("gtk4") },
+            .{ .name = "libintl", .module = libintl.module("libintl") },
+            .{ .name = "config", .module = config_module },
+        },
+    });
+
+    const exe = b.addExecutable(.{
+        .name = config.app_name,
+        .root_module = module,
+    });
     exe.step.dependOn(&compile_resources.step);
     exe.addCSourceFile(.{ .file = resource_file });
-    exe.linkLibC();
-
-    const gobject_codegen = b.dependency("gobject", .{});
-    exe.root_module.addImport("adw", gobject_codegen.module("adw1"));
-    exe.root_module.addImport("gio", gobject_codegen.module("gio2"));
-    exe.root_module.addImport("glib", gobject_codegen.module("glib2"));
-    exe.root_module.addImport("gobject", gobject_codegen.module("gobject2"));
-    exe.root_module.addImport("gtk", gobject_codegen.module("gtk4"));
-
-    const libintl = b.dependency("libintl", .{});
-    exe.root_module.addImport("libintl", libintl.module("libintl"));
-
-    const config_module = b.addModule("config", .{ .root_source_file = b.path("config.zig") });
-    exe.root_module.addImport("config", config_module);
 
     // on windows, we need to explicitly link with gtk from gvsbuild, libintl, vulkan and pthreads.
     // on linux, simply linking with the system libraries works fine.
